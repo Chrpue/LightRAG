@@ -1,0 +1,38 @@
+services:
+  lightrag-strategy:
+    profiles: ["run"]
+    extends:
+      file: base.compose.yml
+      service: lightrag-base
+    container_name: lightrag-strategy
+    ports: ["${STRATEGY_PORT:-19621}:9621"]
+    volumes:
+      - lightrag_inputs_strategy:/app/data/inputs
+      - lightrag_storage_strategy:/app/data/rag_storage
+    networks:
+      - lightrag-network
+    environment:
+      - WEBUI_TITLE=油气田安全生产管控智能知识平台(策略)
+      - WORKSPACE=strategy
+      - POSTGRES_WORKSPACE=strategy
+      - NEO4J_WORKSPACE=strategy
+
+  lightrag-strategy-mcp:
+    image: chrpue/lightrag-mcp-server:0.1.0
+    container_name: lightrag-mcp-strategy-server
+    restart: unless-stopped
+    ports:
+      - "12002:9696"
+    depends_on:
+      lightrag-strategy: { condition: service_healthy }
+    environment:
+      - LIGHT_RAG_HOST=lightrag-strategy
+      - LIGHT_RAG_PORT=9621
+    networks:
+      - lightrag-network
+
+volumes:
+  lightrag_inputs_strategy:
+    external: true
+  lightrag_storage_strategy:
+    external: true

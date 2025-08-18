@@ -1,0 +1,38 @@
+services:
+  lightrag-gas:
+    profiles: ["run"]
+    extends:
+      file: base.compose.yml
+      service: lightrag-base
+    container_name: lightrag-gas
+    ports: ["${GAS_PORT:-19623}:9621"]
+    volumes:
+      - lightrag_inputs_gas:/app/data/inputs
+      - lightrag_storage_gas:/app/data/rag_storage
+    networks:
+      - lightrag-network
+    environment:
+      - WEBUI_TITLE=油气田安全生产管控智能知识平台(业务)
+      - WORKSPACE=gas
+      - POSTGRES_WORKSPACE=gas
+      - NEO4J_WORKSPACE=gas
+
+  lightrag-gas-mcp:
+    image: chrpue/lightrag-mcp-server:0.1.0
+    container_name: lightrag-mcp-gas-server
+    restart: unless-stopped
+    ports:
+      - "12003:9696"
+    depends_on:
+      lightrag-gas: { condition: service_healthy }
+    environment:
+      - LIGHT_RAG_HOST=lightrag-strategy
+      - LIGHT_RAG_PORT=9621
+    networks:
+      - lightrag-network
+
+volumes:
+  lightrag_inputs_gas:
+    external: true
+  lightrag_storage_gas:
+    external: true

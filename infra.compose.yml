@@ -1,0 +1,54 @@
+services:
+  lightrag-postgres:
+    image: shangor/postgres-for-rag:v1.0
+    container_name: lightrag-postgres
+    restart: unless-stopped
+    ports: ["25432:5432"]
+    env_file: [.env]
+    environment:
+      POSTGRES_DB: rag
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - lightrag_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lightrag-network
+
+  lightrag-neo4j:
+    image: neo4j:community-ubi9
+    container_name: lightrag-neo4j
+    restart: unless-stopped
+    ports: ["17474:7474", "17687:7687"]
+    # 不注入 .env，避免将 NEO4J_URI 误当配置项
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD}
+      NEO4J_apoc_export_file_enabled: "true"
+    volumes:
+      - lightrag_neo4j_data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          /var/lib/neo4j/bin/cypher-shell -a bolt://localhost:7687
+          -u neo4j -p "$NEO4J_PASSWORD" --encryption=false 'RETURN 1' >/dev/null
+      interval: 15s
+      timeout: 5s
+      start_period: 120s
+      retries: 10
+    networks:
+      - lightrag-network
+
+networks:
+  lightrag-network:
+    driver: bridge
+
+volumes:
+  lightrag_pg_data:
+    external: true
+  lightrag_neo4j_data:
+    external: true
