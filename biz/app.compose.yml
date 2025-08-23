@@ -7,8 +7,8 @@ services:
     container_name: lightrag-app
     ports: ["${APP_PORT:-19622}:9621"]
     volumes:
-      - lightrag_inputs_app:/app/data/inputs
-      - lightrag_storage_app:/app/data/rag_storage
+      - lightrag_inputs:/app/data/inputs
+      - lightrag_storage:/app/data/rag_storage
     environment:
       - WEBUI_TITLE=油气田安全生产管控智能知识平台(应用)
       - WORKSPACE=app
@@ -32,7 +32,7 @@ services:
       - lightrag-network
 
 volumes:
-  lightrag_inputs_app:
+  lightrag_inputs:
     external: true
-  lightrag_storage_app:
+  lightrag_storage:
     external: true

@@ -7,8 +7,8 @@ services:
     container_name: lightrag-gas
     ports: ["${GAS_PORT:-19623}:9621"]
     volumes:
-      - lightrag_inputs_gas:/app/data/inputs
-      - lightrag_storage_gas:/app/data/rag_storage
+      - lightrag_inputs:/app/data/inputs
+      - lightrag_storage:/app/data/rag_storage
     networks:
       - lightrag-network
     environment:
@@ -32,7 +32,7 @@ services:
       - lightrag-network
 
 volumes:
-  lightrag_inputs_gas:
+  lightrag_inputs:
     external: true
-  lightrag_storage_gas:
+  lightrag_storage:
     external: true

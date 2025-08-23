@@ -1,7 +1,7 @@
 services:
   lightrag-base:
     profiles: ["_template"]
-    image: chrpue/lightrag-service1:1.4.6
+    image: chrpue/lightrag-service:1.4.6
 
     depends_on:
       lightrag-postgres: { condition: service_healthy }
@@ -23,10 +23,10 @@ services:
       - ./.env:/app/.env:ro
 
     healthcheck:
-      test: ["CMD", "/app/health_check.sh"]
+      test: ["CMD-SHELL", "nc -z localhost 9621 || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 30
+      retries: 5
       start_period: 60s
 
     networks:

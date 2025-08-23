@@ -1,6 +1,6 @@
 services:
   lightrag-postgres:
-    image: shangor/postgres-for-rag:v1.0
+    image: chrpue/postgres-for-rag:v1.0
     container_name: lightrag-postgres
     restart: unless-stopped
     ports: ["25432:5432"]
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: rag
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - lightrag_pg_data:/var/lib/postgresql/data
+      - lightrag_pg_data:/var/lib/postgresql/16/main
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U rag"]
       interval: 10s
@@ -20,7 +20,7 @@ services:
       - lightrag-network
 
   lightrag-neo4j:
-    image: neo4j:community-ubi9
+    image: chrpue/neo4j:community-ubi9
     container_name: lightrag-neo4j
     restart: unless-stopped
     ports: ["17474:7474", "17687:7687"]

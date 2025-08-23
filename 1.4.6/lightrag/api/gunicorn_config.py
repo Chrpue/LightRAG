@@ -29,7 +29,7 @@ certfile = None
 keyfile = None
 
 # Enable preload_app option
-preload_app = False
+preload_app = True
 
 # Use Uvicorn worker
 worker_class = "uvicorn.workers.UvicornWorker"
